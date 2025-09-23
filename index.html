@@ -3,17 +3,36 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>KURT Club — Techno in Bochum</title>
+    <meta name="author" content="Torsten Barthel" />
+    <meta name="keywords" content="KURT, KLUB, Techno, Bochum, Nightclub" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <link rel="apple-touch-icon" href="assets/images/touch-icon.png" />
+    <link rel="icon" type="image/png" href="assets/images/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <title>KLUB KURT — Techno in Bochum</title>
     <meta
       name="description"
-      content="KURT Club is a techno club in Bochum. Line-ups, tickets, and vibes."
+      content="KLUB KURT is a techno club in Bochum. Line-ups, tickets, and vibes."
     />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body class="theme-acid">
     <header class="site-header" id="top">
-      <a href="#top" class="logo" aria-label="KURT Club home">KURT</a>
+      <a href="#top" class="logo" aria-label="KURT Club home">KLUB-KURT</a>
       <nav class="nav">
+        <button
+          class="now-playing-btn"
+          type="button"
+          aria-label="Stop music"
+          title="Stop music"
+          hidden
+        >
+          ♪
+          <span class="sr-only">Stop music</span>
+        </button>
         <button
           class="nav-toggle"
           type="button"
@@ -45,14 +64,14 @@
       <section class="hero" id="home" aria-label="Hero">
         <div class="hero__fx" aria-hidden="true"></div>
         <div class="hero__inner">
-          <h1 class="title sr-only">KURT KLUB</h1>
+          <h1 class="title sr-only">KLUB KURT</h1>
           <img
             class="hero-logo"
             src="assets/images/logo.jpg"
             alt="KURT KLUB logo"
             width="800"
           />
-          <p class="subtitle">House. Techno. Ruhrgebiet heart.</p>
+          <p class="subtitle">House. Techno. Ruhrgebiet Heart.</p>
           <div class="cta">
             <a class="btn btn--primary" href="#events">View Events</a>
             <a class="btn btn--ghost" href="#tickets">Get Tickets</a>
@@ -146,7 +165,7 @@
       <section class="about section" id="about" aria-labelledby="about-title">
         <h2 id="about-title">About KURT</h2>
 
-        <p>Unser Club-Feeling auch online – hör rein:</p>
+        <p>Our club feeling online too – listen in:</p>
 
         <!-- SoundCloud Embed -->
         <iframe
@@ -160,13 +179,13 @@
         <!-- /SoundCloud Embed -->
         <p>
           KURT is a raw, intimate techno basement in Bochum Mitte. No VIP. No
-          flash. Just a tuned system, dark corners, and a crowd that’s here to
+          flash. Just a tuned system, dark corners, and a crowd that's here to
           move.
         </p>
         <ul class="bullets">
-          <li>PK sound tuned for pressure—not volume.</li>
+          <li>Function One sound tuned for pressure - not volume.</li>
           <li>Lights minimal, strobes maximal.</li>
-          <li>Cashless bar · Cloakroom available.</li>
+          <li>Love for the underground.</li>
         </ul>
       </section>
 
@@ -189,7 +208,7 @@
     </main>
 
     <footer class="site-footer">
-      <p>© <span id="year"></span> KURT KLUB · Bochum</p>
+      <p>© <span id="year"></span> KLUB KURT · Bochum</p>
     </footer>
 
     <script src="https://w.soundcloud.com/player/api.js"></script>
@@ -229,6 +248,7 @@
       const musicBadge = musicBtn
         ? musicBtn.querySelector('.music-badge')
         : null;
+      const nowPlayingBtn = document.querySelector('.now-playing-btn');
       const scIframe = document.querySelector(
         'iframe[src*="soundcloud.com/player"]'
       );
@@ -253,11 +273,13 @@
 
       function updateUI(state) {
         document.body.classList.toggle('flash-mode', state);
+        document.body.classList.toggle('music-on', state);
         if (musicBtn) musicBtn.setAttribute('aria-pressed', String(state));
         if (musicBadge) {
           musicBadge.textContent = state ? 'Playing' : 'Not playing';
           musicBadge.classList.toggle('is-playing', state);
         }
+        if (nowPlayingBtn) nowPlayingBtn.hidden = !state;
       }
 
       if (musicBtn) {
@@ -275,6 +297,12 @@
             isPlaying = !isPlaying;
             updateUI(isPlaying);
           }
+          // Close mobile menu if open
+          if (document.body.classList.contains('nav-open')) {
+            document.body.classList.remove('nav-open');
+            const toggle = document.querySelector('.nav-toggle');
+            if (toggle) toggle.setAttribute('aria-expanded', 'false');
+          }
         });
 
         if (prefersReduced) {
@@ -282,6 +310,17 @@
           musicBtn.title =
             'Playing works; visual effects are reduced due to motion preference';
         }
+      }
+
+      if (nowPlayingBtn) {
+        nowPlayingBtn.addEventListener('click', () => {
+          if (widget) {
+            widget.pause();
+          } else {
+            isPlaying = false;
+            updateUI(false);
+          }
+        });
       }
     </script>
   </body>

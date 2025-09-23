@@ -103,6 +103,38 @@ body {
   color: var(--fg);
 }
 
+/* Now Playing mobile chip button */
+.now-playing-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  /* width: 36px; */
+  /* height: 36px; */
+  /* margin-right: 8px; */
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  /* background: linear-gradient(135deg,
+ color-mix(in oklab, var(--accent) 35%, transparent),
+ color-mix(in oklab, var(--accent-2) 35%, transparent)); */
+  color: #08110c;
+  /* font-weight: 800; */
+  /* line-height: 1; */
+  cursor: pointer;
+}
+.now-playing-btn:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--accent) 60%, transparent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 720px) {
+  .now-playing-btn {
+    display: inline-flex;
+  }
+  body:not(.music-on) .now-playing-btn {
+    display: none;
+  }
+}
+
 /******** hero ********/
 .hero {
   position: relative;
@@ -638,6 +670,8 @@ address {
     padding: 10px 12px;
     border-radius: 10px;
     background: rgba(255, 255, 255, 0.02);
+    width: 100%;
+    text-align: center;
   }
 
   .hero__inner {
@@ -680,7 +714,7 @@ address {
   border-radius: 8px;
   font-size: 12px;
   line-height: 1.2;
-  border: 1px solid var(--border);
+  /* border: 1px solid var(--border);*/
   color: var(--muted);
   background: rgba(255, 255, 255, 0.03);
 }
