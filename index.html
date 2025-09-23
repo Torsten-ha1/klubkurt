@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>KURT Club — Techno in Bochum</title>
+    <meta
+      name="description"
+      content="KURT Club is a techno club in Bochum. Line-ups, tickets, and vibes."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="theme-acid">
+    <header class="site-header" id="top">
+      <a href="#top" class="logo" aria-label="KURT Club home">KURT</a>
+      <nav class="nav">
+        <button
+          class="nav-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="nav-menu"
+          aria-label="Open menu"
+        >
+          ☰
+        </button>
+        <div id="nav-menu" class="nav__links">
+          <a href="#events">Events</a>
+          <a href="#tickets">Tickets</a>
+          <a href="#about">About</a>
+          <a href="#contact">Contact</a>
+          <button
+            class="btn btn--ghost toggle-flash"
+            type="button"
+            aria-pressed="false"
+            title="Toggle Flash Mode"
+          >
+            ⚡ Flash
+          </button>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" id="home" aria-label="Hero">
+        <div class="hero__fx" aria-hidden="true"></div>
+        <div class="hero__inner">
+          <h1 class="title sr-only">KURT KLUB</h1>
+          <img
+            class="hero-logo"
+            src="assets/images/logo.jpg"
+            alt="KURT KLUB logo"
+            width="800"
+          />
+          <p class="subtitle">House. Techno. Ruhrgebiet heart.</p>
+          <div class="cta">
+            <a class="btn btn--primary" href="#events">View Events</a>
+            <a class="btn btn--ghost" href="#tickets">Get Tickets</a>
+          </div>
+        </div>
+      </section>
+
+      <div class="marquee" aria-hidden="true">
+        <div class="marquee__track">
+          <span>KURT · KLUB · TECHNO · BOCHUM · NIGHT SHIFT</span>
+          <span>KURT · KLUB · TECHNO · BOCHUM · NIGHT SHIFT</span>
+          <span>KURT · KLUB · TECHNO · BOCHUM · NIGHT SHIFT</span>
+          <span>KURT · KLUB · TECHNO · BOCHUM · NIGHT SHIFT</span>
+        </div>
+      </div>
+
+      <section
+        class="events section"
+        id="events"
+        aria-labelledby="events-title"
+      >
+        <h2 id="events-title">Upcoming Events</h2>
+        <div class="event-list">
+          <article class="event">
+            <header>
+              <time datetime="2025-10-03">Fri · 03 Oct 2025</time>
+              <h3>STEELWORKS XXX</h3>
+            </header>
+            <p class="lineup">
+              Line-up: <strong>DJ Heartless</strong>,
+              <strong>Paula Kraft</strong>, <strong>RVR76</strong>
+            </p>
+            <div class="tags">
+              <span>Techno</span><span>Industrial</span><span>Boiler</span>
+            </div>
+            <a class="btn btn--small" href="#tickets">Tickets</a>
+          </article>
+          <article class="event">
+            <header>
+              <time datetime="2025-10-31">Fri · 31 Oct 2025</time>
+              <h3>ALL HALLOWS RAVE</h3>
+            </header>
+            <p class="lineup">
+              Line-up: <strong>VØLT</strong>, <strong>Madame Sicher</strong>,
+              <strong>BRN/CH</strong>
+            </p>
+            <div class="tags"><span>Hardgroove</span><span>Acid</span></div>
+            <a class="btn btn--small" href="#tickets">Tickets</a>
+          </article>
+          <article class="event">
+            <header>
+              <time datetime="2025-11-15">Sat · 15 Nov 2025</time>
+              <h3>RUHRPULSE</h3>
+            </header>
+            <p class="lineup">
+              Line-up: <strong>Anna K.</strong>, <strong>Krøhn</strong>,
+              <strong>La Vanta</strong>
+            </p>
+            <div class="tags"><span>Techno</span><span>EBM</span></div>
+            <a class="btn btn--small" href="#tickets">Tickets</a>
+          </article>
+        </div>
+      </section>
+
+      <section
+        class="tickets section"
+        id="tickets"
+        aria-labelledby="tickets-title"
+      >
+        <h2 id="tickets-title">Tickets & Newsletter</h2>
+        <p>Stay in the loop. We’ll send drops, line-ups, and secret nights.</p>
+        <form
+          class="form"
+          action="#"
+          method="post"
+          onsubmit="return false"
+          aria-label="Newsletter form"
+        >
+          <label class="sr-only" for="email">Email</label>
+          <input
+            id="email"
+            type="email"
+            placeholder="you@domain.com"
+            required
+          />
+          <button class="btn btn--primary" type="submit">Notify Me</button>
+        </form>
+        <p class="hint">No spam. Unsubscribe anytime.</p>
+      </section>
+
+      <section class="about section" id="about" aria-labelledby="about-title">
+        <h2 id="about-title">About KURT</h2>
+
+        <p>Unser Club-Feeling auch online – hör rein:</p>
+
+        <!-- SoundCloud Embed -->
+        <iframe
+          width="100%"
+          height="166"
+          scrolling="no"
+          frameborder="no"
+          allow="autoplay"
+          src="https://w.soundcloud.com/player/?url=https://soundcloud.com/followlucre/plastic-magazine-mix?si=18b1469b3e9544c0a35f2552d201cc49&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"
+        ></iframe>
+        <!-- /SoundCloud Embed -->
+        <p>
+          KURT is a raw, intimate techno basement in Bochum Mitte. No VIP. No
+          flash. Just a tuned system, dark corners, and a crowd that’s here to
+          move.
+        </p>
+        <ul class="bullets">
+          <li>PK sound tuned for pressure—not volume.</li>
+          <li>Lights minimal, strobes maximal.</li>
+          <li>Cashless bar · Cloakroom available.</li>
+        </ul>
+      </section>
+
+      <section
+        class="contact section"
+        id="contact"
+        aria-labelledby="contact-title"
+      >
+        <h2 id="contact-title">Visit</h2>
+        <address>
+          Kortumstraße 1 · 44787 Bochum<br />
+          Doors: 23:00 · Strictly 18+ · R.O.A.R.
+        </address>
+        <div class="socials">
+          <a href="#" aria-label="Instagram">Instagram</a>
+          <a href="#" aria-label="Resident Advisor">RA</a>
+          <a href="#" aria-label="Facebook">Facebook</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>© <span id="year"></span> KURT KLUB · Bochum</p>
+    </footer>
+
+    <script>
+      // Year
+      document.getElementById('year').textContent = new Date().getFullYear();
+
+      // Simple mobile nav (no backdrop)
+      const navToggle = document.querySelector('.nav-toggle');
+      const navMenu = document.getElementById('nav-menu');
+      if (navToggle && navMenu) {
+        navToggle.addEventListener('click', () => {
+          const open = document.body.classList.toggle('nav-open');
+          navToggle.setAttribute('aria-expanded', String(open));
+        });
+        // close menu when a link is clicked
+        navMenu.addEventListener('click', (e) => {
+          if (e.target.closest('a')) {
+            document.body.classList.remove('nav-open');
+            navToggle.setAttribute('aria-expanded', 'false');
+          }
+        });
+        // close on Escape
+        window.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            document.body.classList.remove('nav-open');
+            navToggle.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+
+      // Flash toggle (kept)
+      const prefersReduced = window.matchMedia(
+        '(prefers-reduced-motion: reduce)'
+      ).matches;
+      const btn = document.querySelector('.toggle-flash');
+      if (btn) {
+        btn.addEventListener('click', () => {
+          const active = document.body.classList.toggle('flash-mode');
+          btn.setAttribute('aria-pressed', String(active));
+        });
+        if (prefersReduced) {
+          btn.disabled = true;
+          btn.title = 'Animations limited due to reduced motion preference';
+        }
+      }
+    </script>
+  </body>
+</html>
