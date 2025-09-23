@@ -29,12 +29,13 @@
           <a href="#about">About</a>
           <a href="#contact">Contact</a>
           <button
-            class="btn btn--ghost toggle-flash"
+            class="btn btn--ghost toggle-music"
             type="button"
             aria-pressed="false"
-            title="Toggle Flash Mode"
+            title="Play music"
           >
-            ⚡ Flash
+            ♪ Music
+            <span class="music-badge" aria-live="polite">Not playing</span>
           </button>
         </div>
       </nav>
@@ -191,6 +192,7 @@
       <p>© <span id="year"></span> KURT KLUB · Bochum</p>
     </footer>
 
+    <script src="https://w.soundcloud.com/player/api.js"></script>
     <script>
       // Year
       document.getElementById('year').textContent = new Date().getFullYear();
@@ -219,19 +221,66 @@
         });
       }
 
-      // Flash toggle (kept)
+      // Music button controls SoundCloud + flash visuals
       const prefersReduced = window.matchMedia(
         '(prefers-reduced-motion: reduce)'
       ).matches;
-      const btn = document.querySelector('.toggle-flash');
-      if (btn) {
-        btn.addEventListener('click', () => {
-          const active = document.body.classList.toggle('flash-mode');
-          btn.setAttribute('aria-pressed', String(active));
+      const musicBtn = document.querySelector('.toggle-music');
+      const musicBadge = musicBtn
+        ? musicBtn.querySelector('.music-badge')
+        : null;
+      const scIframe = document.querySelector(
+        'iframe[src*="soundcloud.com/player"]'
+      );
+      let widget = null;
+      let isPlaying = false;
+
+      if (window.SC && scIframe) {
+        widget = SC.Widget(scIframe);
+        widget.bind(SC.Widget.Events.PLAY, () => {
+          isPlaying = true;
+          updateUI(true);
         });
+        widget.bind(SC.Widget.Events.PAUSE, () => {
+          isPlaying = false;
+          updateUI(false);
+        });
+        widget.bind(SC.Widget.Events.FINISH, () => {
+          isPlaying = false;
+          updateUI(false);
+        });
+      }
+
+      function updateUI(state) {
+        document.body.classList.toggle('flash-mode', state);
+        if (musicBtn) musicBtn.setAttribute('aria-pressed', String(state));
+        if (musicBadge) {
+          musicBadge.textContent = state ? 'Playing' : 'Not playing';
+          musicBadge.classList.toggle('is-playing', state);
+        }
+      }
+
+      if (musicBtn) {
+        musicBtn.addEventListener('click', () => {
+          if (widget) {
+            // Toggle play/pause via SoundCloud API
+            if (isPlaying) {
+              widget.pause();
+            } else {
+              widget.play();
+            }
+            // UI will update from widget events
+          } else {
+            // Fallback if API not available
+            isPlaying = !isPlaying;
+            updateUI(isPlaying);
+          }
+        });
+
         if (prefersReduced) {
-          btn.disabled = true;
-          btn.title = 'Animations limited due to reduced motion preference';
+          // Respect reduced motion: keep music control, just adjust title hint
+          musicBtn.title =
+            'Playing works; visual effects are reduced due to motion preference';
         }
       }
     </script>

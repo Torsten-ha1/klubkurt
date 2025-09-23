@@ -108,11 +108,30 @@ body {
   position: relative;
   isolation: isolate;
   min-height: calc(100svh - var(--header-h) - var(--marquee-h));
+  min-height: calc(100svh - var(--marquee-h));
+  margin-top: calc(-1 * var(--header-h));
+  padding-top: var(--header-h);
   display: grid;
   place-items: center;
   text-align: center;
   overflow: hidden;
 }
+
+/* .hero {
+  min-height: calc(100svh - var(--marquee-h));
+  /* pull hero up under the sticky header so colors shine through */
+/*
+  margin-top: calc(-1 * var(--header-h));
+  padding-top: var(--header-h);
+  background: var(--hero-bg);
+  color: var(--hero-fg);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+} */
 .hero__inner {
   padding: 96px 24px 72px;
 }
@@ -185,6 +204,20 @@ body {
   margin-left: -110vmax;
   margin-top: -110vmax;
 
+  background: conic-gradient(
+    from 180deg at 50% 50%,
+    rgba(51, 255, 153, 0.12),
+    rgba(255, 43, 214, 0.12),
+    transparent 50%
+  );
+  mix-blend-mode: soft-light;
+  animation: swirl 18s linear infinite;
+
+  pointer-events: none;
+  z-index: -1;
+}
+
+.flash-mode .hero__fx::after {
   /* spicier dual-layer conic: a bright narrow sweep + soft wash */
   background: conic-gradient(
       from 180deg at 50% 50%,
@@ -197,18 +230,15 @@ body {
       color-mix(in oklab, var(--accent) 35%, transparent) 0 180deg,
       color-mix(in oklab, var(--accent-2) 35%, transparent) 180deg 360deg
     );
-
-  /*mix-blend-mode: screen;*/
   mix-blend-mode: soft-light;
   filter: drop-shadow(
       0 0 24px color-mix(in oklab, var(--accent) 35%, transparent)
     )
     drop-shadow(0 0 36px color-mix(in oklab, var(--accent-2) 25%, transparent));
-
-  pointer-events: none;
-  z-index: -1;
-  animation: swirl 18s linear infinite;
+  animation: swirl 12s linear infinite, hueSweep 6s linear infinite,
+    softStrobe 1.2s ease-in-out infinite;
 }
+
 /* .hero__fx::after {
   background: conic-gradient(
     from 180deg at 50% 50%,
@@ -274,6 +304,7 @@ body {
   color: #08110c;
   font-weight: 700;
   border-color: transparent;
+  border: none;
 }
 .btn--ghost {
   background: transparent;
@@ -612,6 +643,10 @@ address {
   .hero__inner {
     padding: 72px 16px 56px;
   }
+  /* Nudge hero logo up a bit on mobile */
+  .hero-logo {
+    margin-top: -158px; /* was -10px default */
+  }
   .section {
     padding: 56px 16px;
   }
@@ -635,4 +670,22 @@ address {
   [id] {
     scroll-margin-top: 76px;
   }
+}
+
+/* music status badge */
+.music-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.2;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.03);
+}
+.music-badge.is-playing {
+  color: #08110c;
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
 }
