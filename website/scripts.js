@@ -216,3 +216,358 @@ if (nowPlayingBtn) {
     updateUI(false);
   });
 }
+
+// --- Site Configuration Management ---
+class SiteConfigManager {
+  constructor() {
+    this.apiBaseUrl = 'http://localhost:3001/api';
+    this.marqueeElement = document.querySelector('.marquee__track');
+    this.soundcloudIframe = document.querySelector(
+      'iframe[src*="soundcloud.com/player"]'
+    );
+    this.isLoading = false;
+
+    // Initialize site configuration loading
+    this.loadConfigurations();
+  }
+
+  async loadConfigurations() {
+    if (this.isLoading) return;
+
+    this.isLoading = true;
+
+    try {
+      const response = await fetch(`${this.apiBaseUrl}/siteconfigs`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.success && data.data) {
+        this.applyConfigurations(data.data);
+      } else {
+        console.warn('Invalid response format from site config API');
+      }
+    } catch (error) {
+      console.warn(
+        'Failed to load site configurations, using defaults:',
+        error
+      );
+      // Keep existing hardcoded values as fallback
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  applyConfigurations(configs) {
+    // Update marquee banner
+    if (configs.marquee && configs.marquee.texts && this.marqueeElement) {
+      this.updateMarqueeBanner(configs.marquee.texts);
+    }
+
+    // Update SoundCloud widget
+    if (configs.soundcloud && configs.soundcloud.url && this.soundcloudIframe) {
+      this.updateSoundCloudWidget(configs.soundcloud.url);
+    }
+  }
+
+  updateMarqueeBanner(texts) {
+    if (!Array.isArray(texts) || texts.length !== 4) {
+      console.warn('Invalid marquee texts format:', texts);
+      return;
+    }
+
+    // Clear existing content
+    this.marqueeElement.innerHTML = '';
+
+    // Add new spans with the configured texts
+    texts.forEach((text) => {
+      const span = document.createElement('span');
+      span.textContent = text;
+      this.marqueeElement.appendChild(span);
+    });
+
+    console.log('Updated marquee banner with CMS content');
+  }
+
+  updateSoundCloudWidget(soundcloudUrl) {
+    try {
+      // Convert SoundCloud track URL to embeddable format
+      const embedUrl = this.convertToEmbedUrl(soundcloudUrl);
+
+      if (embedUrl && embedUrl !== this.soundcloudIframe.src) {
+        // Store current widget state
+        const wasReady = widgetReady;
+        const wasPlaying = userWantsPlay && confirmedPlaying;
+
+        // Stop current widget if playing
+        if (wasPlaying && widget) {
+          widget.pause();
+          userWantsPlay = false;
+          confirmedPlaying = false;
+          updateUI(false);
+        }
+
+        // Update iframe src
+        this.soundcloudIframe.src = embedUrl;
+
+        // Reinitialize widget
+        this.reinitializeSoundCloudWidget();
+
+        console.log('Updated SoundCloud widget with new track:', embedUrl);
+      }
+    } catch (error) {
+      console.error('Error updating SoundCloud widget:', error);
+    }
+  }
+
+  convertToEmbedUrl(trackUrl) {
+    if (!trackUrl || !trackUrl.includes('soundcloud.com')) {
+      return null;
+    }
+
+    // If it's already an embed URL, return as is
+    if (trackUrl.includes('w.soundcloud.com/player')) {
+      return trackUrl;
+    }
+
+    // Convert regular SoundCloud URL to embed format
+    const baseEmbedUrl = 'https://w.soundcloud.com/player/?url=';
+    const params =
+      '&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true';
+
+    return `${baseEmbedUrl}${encodeURIComponent(trackUrl)}${params}`;
+  }
+
+  reinitializeSoundCloudWidget() {
+    if (window.SC && this.soundcloudIframe) {
+      // Reset widget state
+      widget = null;
+      widgetReady = false;
+
+      // Small delay to ensure iframe has loaded
+      setTimeout(() => {
+        widget = SC.Widget(this.soundcloudIframe);
+        this.bindWidgetEvents();
+      }, 500);
+    }
+  }
+
+  bindWidgetEvents() {
+    if (!widget) return;
+
+    widget.bind(SC.Widget.Events.READY, () => {
+      widgetReady = true;
+      console.log('New SoundCloud widget ready');
+
+      if (userWantsPlay && !confirmedPlaying) {
+        showLoading();
+        ensurePlaying();
+      }
+    });
+
+    widget.bind(SC.Widget.Events.PLAY_PROGRESS, (e) => {
+      if (!userWantsPlay) return;
+      if (
+        !confirmedPlaying &&
+        e &&
+        typeof e.currentPosition === 'number' &&
+        e.currentPosition > 0
+      ) {
+        confirmAndShowPlaying();
+      }
+    });
+
+    widget.bind(SC.Widget.Events.PAUSE, () => {
+      console.log('New widget PAUSE event');
+
+      if (userWantsPlay && !confirmedPlaying && attempts < MAX_ATTEMPTS) {
+        if (retryTimer) clearTimeout(retryTimer);
+        retryTimer = setTimeout(ensurePlaying, RETRY_DELAY_MS);
+        return;
+      }
+
+      confirmedPlaying = false;
+      userWantsPlay = false;
+      attempts = 0;
+      updateUI(false);
+    });
+
+    widget.bind(SC.Widget.Events.FINISH, () => {
+      confirmedPlaying = false;
+      userWantsPlay = false;
+      attempts = 0;
+      updateUI(false);
+    });
+  }
+}
+
+// --- Events Management ---
+class EventsManager {
+  constructor() {
+    this.eventsContainer = document.querySelector('.event-list');
+    this.apiBaseUrl = 'http://localhost:3001/api';
+    this.isLoading = false;
+
+    // Initialize events loading
+    this.loadEvents();
+  }
+
+  async loadEvents() {
+    if (this.isLoading || !this.eventsContainer) return;
+
+    this.isLoading = true;
+    this.showLoadingState();
+
+    try {
+      const response = await fetch(
+        `${this.apiBaseUrl}/events?upcoming=true&limit=10`
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (data.success && Array.isArray(data.data)) {
+        this.renderEvents(data.data);
+      } else {
+        this.showErrorState('Invalid response format from server');
+      }
+    } catch (error) {
+      console.warn(
+        'Failed to load dynamic events, dont using fallback:',
+        error
+      );
+      // this.showFallbackEvents();
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  showLoadingState() {
+    this.eventsContainer.innerHTML = `
+      <div class="events-loading">
+        <div class="loading-spinner"></div>
+        <p>Loading upcoming events...</p>
+      </div>
+    `;
+  }
+
+  showErrorState(message) {
+    this.eventsContainer.innerHTML = `
+      <div class="events-error">
+        <p>Unable to load events: ${message}</p>
+        <p>Please try again later.</p>
+      </div>
+    `;
+  }
+
+  showFallbackEvents() {
+    // Fallback to original hardcoded events if API fails
+    this.eventsContainer.innerHTML = `Error loading events`;
+  }
+
+  renderEvents(events) {
+    if (!events || events.length === 0) {
+      this.eventsContainer.innerHTML = `
+        <div class="events-empty">
+          <h3>No upcoming events</h3>
+          <p>Check back soon for new events!</p>
+        </div>
+      `;
+      return;
+    }
+
+    const eventsHtml = events
+      .map((event) => this.createEventHTML(event))
+      .join('');
+    this.eventsContainer.innerHTML = eventsHtml;
+  }
+
+  createEventHTML(event) {
+    const eventDate = new Date(event.date);
+    const formattedDate = this.formatEventDate(eventDate);
+    const lineupText = this.formatLineup(event.lineup);
+    const tagsHTML = this.formatTags(event.tags);
+
+    return `
+      <article class="event">
+        <header>
+          <time datetime="${
+            eventDate.toISOString().split('T')[0]
+          }">${formattedDate}</time>
+          <h3>${this.escapeHTML(event.title)}</h3>
+        </header>
+        ${lineupText ? `<p class="lineup">${lineupText}</p>` : ''}
+        ${tagsHTML ? `<div class="tags">${tagsHTML}</div>` : ''}
+        <a class="btn btn--small" href="#tickets">Tickets</a>
+      </article>
+    `;
+  }
+
+  formatEventDate(date) {
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+
+    const dayName = days[date.getDay()];
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+
+    return `${dayName} · ${day} ${month} ${year}`;
+  }
+
+  formatLineup(lineup) {
+    if (!lineup || lineup.length === 0) return '';
+
+    const formattedLineup = lineup
+      .filter((artist) => artist && artist.trim())
+      .map((artist) => `<strong>${this.escapeHTML(artist)}</strong>`)
+      .join(', ');
+
+    return formattedLineup ? `Line-up: ${formattedLineup}` : '';
+  }
+
+  formatTags(tags) {
+    if (!tags || tags.length === 0) return '';
+
+    return tags
+      .filter((tag) => tag && tag.trim())
+      .map((tag) => `<span>${this.escapeHTML(tag)}</span>`)
+      .join('');
+  }
+
+  escapeHTML(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+}
+
+// Initialize managers when DOM is loaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    new EventsManager();
+    new SiteConfigManager();
+  });
+} else {
+  new EventsManager();
+  new SiteConfigManager();
+}
