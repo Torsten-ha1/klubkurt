@@ -665,7 +665,7 @@ address {
     display: flex;
   }
   .nav__links a,
-  .nav__links .toggle-flash {
+  .nav__links .toggle-music {
     display: block;
     padding: 10px 12px;
     border-radius: 10px;
