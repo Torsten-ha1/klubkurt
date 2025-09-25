@@ -68,12 +68,12 @@ mongoose
   });
 
 // Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/events', eventsRoutes);
-app.use('/api/siteconfigs', siteConfigsRoutes);
+app.use('/auth', authRoutes);
+app.use('/events', eventsRoutes);
+app.use('/siteconfigs', siteConfigsRoutes);
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
+app.get('/health', (req, res) => {
   res.json({
     status: 'OK',
     timestamp: new Date().toISOString(),

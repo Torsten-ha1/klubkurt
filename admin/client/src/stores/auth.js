@@ -1,62 +1,68 @@
-import { defineStore } from 'pinia'
-import axios from 'axios'
+import { defineStore } from 'pinia';
+import axios from 'axios';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null,
     token: localStorage.getItem('token') || null,
     isLoading: false,
-    error: null
+    error: null,
   }),
 
   getters: {
     isAuthenticated: (state) => !!state.token && !!state.user,
-    isAdmin: (state) => state.user?.role === 'admin'
+    isAdmin: (state) => state.user?.role === 'admin',
   },
 
   actions: {
     async login(credentials) {
-      this.isLoading = true
-      this.error = null
-      
+      this.isLoading = true;
+      this.error = null;
+
       try {
-        const response = await axios.post('/api/auth/login', credentials)
-        const { token, user } = response.data
-        
-        this.token = token
-        this.user = user
-        
+        // Set base URL for all axios requests
+        axios.defaults.baseURL =
+          process.env.NODE_ENV === 'development'
+            ? 'http://localhost:3001'
+            : 'https://api.klub-kurt.com';
+
+        const response = await axios.post('/api/auth/login', credentials);
+        const { token, user } = response.data;
+
+        this.token = token;
+        this.user = user;
+
         // Store token in localStorage
-        localStorage.setItem('token', token)
-        
+        localStorage.setItem('token', token);
+
         // Set default authorization header
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-        
-        return { success: true }
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+        return { success: true };
       } catch (error) {
-        this.error = error.response?.data?.message || 'Login failed'
-        return { success: false, error: this.error }
+        this.error = error.response?.data?.message || 'Login failed';
+        return { success: false, error: this.error };
       } finally {
-        this.isLoading = false
+        this.isLoading = false;
       }
     },
 
     async verifyToken() {
       if (!this.token) {
-        return false
+        return false;
       }
 
       try {
         // Set authorization header
-        axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`
-        
-        const response = await axios.get('/api/auth/verify')
-        this.user = response.data.user
-        return true
+        axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`;
+
+        const response = await axios.get('/api/auth/verify');
+        this.user = response.data.user;
+        return true;
       } catch (error) {
         // Token is invalid, clear auth data
-        this.logout()
-        return false
+        this.logout();
+        return false;
       }
     },
 
@@ -64,27 +70,27 @@ export const useAuthStore = defineStore('auth', {
       try {
         // Call logout endpoint if authenticated
         if (this.token) {
-          await axios.post('/api/auth/logout')
+          await axios.post('/api/auth/logout');
         }
       } catch (error) {
         // Ignore logout errors
-        console.warn('Logout error:', error)
+        console.warn('Logout error:', error);
       } finally {
         // Clear auth data
-        this.user = null
-        this.token = null
-        this.error = null
-        
+        this.user = null;
+        this.token = null;
+        this.error = null;
+
         // Remove token from localStorage
-        localStorage.removeItem('token')
-        
+        localStorage.removeItem('token');
+
         // Remove authorization header
-        delete axios.defaults.headers.common['Authorization']
+        delete axios.defaults.headers.common['Authorization'];
       }
     },
 
     clearError() {
-      this.error = null
-    }
-  }
-})
+      this.error = null;
+    },
+  },
+});

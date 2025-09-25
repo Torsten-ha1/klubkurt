@@ -26,6 +26,12 @@ export const useSiteConfigsStore = defineStore('siteConfigs', {
       this.error = null;
 
       try {
+        // Set base URL for all axios requests
+        axios.defaults.baseURL =
+          process.env.NODE_ENV === 'development'
+            ? 'http://localhost:3001'
+            : 'https://api.klub-kurt.com';
+
         const response = await axios.get(`${API_URL}/siteconfigs`);
         this.configs = response.data.data;
         return response.data;
