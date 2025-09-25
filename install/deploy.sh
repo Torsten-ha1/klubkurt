@@ -21,7 +21,7 @@ cp -r dist/* /var/www/admin.klub-kurt.com/public_html/
 
 cd /opt/klubkurt/admin/server
 npm install
-pm2 restart /opt/klubkurt/admin/server.js
+pm2 restart server.js
 
 pm2 list
 
