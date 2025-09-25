@@ -174,6 +174,7 @@
           scrolling="no"
           frameborder="no"
           allow="autoplay"
+          tabindex="-1"
           src="https://w.soundcloud.com/player/?url=https://soundcloud.com/followlucre/plastic-magazine-mix?si=18b1469b3e9544c0a35f2552d201cc49&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"
         ></iframe>
         <!-- /SoundCloud Embed -->
@@ -306,11 +307,18 @@
 
           console.log('SoundCloud Widget ready');
 
-          // Prime the widget for Safari - play then immediately pause
-          widget.play();
-          setTimeout(() => {
-            widget.pause();
-          }, 10);
+          // Only prime for Safari to avoid Chrome scroll issues
+          const isSafari = /^((?!chrome|android).)*safari/i.test(
+            navigator.userAgent
+          );
+
+          if (isSafari) {
+            // Prime the widget for Safari - play then immediately pause
+            widget.play();
+            setTimeout(() => {
+              widget.pause();
+            }, 10);
+          }
         });
 
         // --- Create widget and bind events
@@ -344,6 +352,8 @@
         });
 
         widget.bind(SC.Widget.Events.PAUSE, () => {
+          console.log('Widget PAUSE event');
+
           if (userWantsPlay && !confirmedPlaying && attempts < MAX_ATTEMPTS) {
             // Safari/SC paused before progress — retry quickly within gesture window
             if (retryTimer) clearTimeout(retryTimer);
