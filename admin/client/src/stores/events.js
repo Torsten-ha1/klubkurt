@@ -55,7 +55,7 @@ export const useEventsStore = defineStore('events', {
           }
         });
 
-        const response = await axios.get(`/api/events?${params}`);
+        const response = await axios.get(`/events?${params}`);
         this.events = response.data.data || [];
         return { success: true };
       } catch (error) {
@@ -71,7 +71,7 @@ export const useEventsStore = defineStore('events', {
       this.error = null;
 
       try {
-        const response = await axios.get(`/api/events/${id}`);
+        const response = await axios.get(`/events/${id}`);
         this.currentEvent = response.data.data;
         return { success: true };
       } catch (error) {
@@ -87,7 +87,7 @@ export const useEventsStore = defineStore('events', {
       this.error = null;
 
       try {
-        const response = await axios.post('/api/events', eventData);
+        const response = await axios.post('/events', eventData);
         const newEvent = response.data.data;
 
         // Add to events array
@@ -110,7 +110,7 @@ export const useEventsStore = defineStore('events', {
       this.error = null;
 
       try {
-        const response = await axios.put(`/api/events/${id}`, eventData);
+        const response = await axios.put(`/events/${id}`, eventData);
         const updatedEvent = response.data.data;
 
         // Update in events array
@@ -141,7 +141,7 @@ export const useEventsStore = defineStore('events', {
       this.error = null;
 
       try {
-        await axios.delete(`/api/events/${id}`);
+        await axios.delete(`/events/${id}`);
 
         // Remove from events array
         this.events = this.events.filter((event) => event.id !== id);

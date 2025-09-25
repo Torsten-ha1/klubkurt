@@ -1,8 +1,6 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
-
 export const useSiteConfigsStore = defineStore('siteConfigs', {
   state: () => ({
     configs: {
@@ -32,7 +30,7 @@ export const useSiteConfigsStore = defineStore('siteConfigs', {
             ? 'http://localhost:3001'
             : 'https://api.klub-kurt.com';
 
-        const response = await axios.get(`${API_URL}/siteconfigs`);
+        const response = await axios.get(`/siteconfigs`);
         this.configs = response.data.data;
         return response.data;
       } catch (error) {
@@ -50,7 +48,7 @@ export const useSiteConfigsStore = defineStore('siteConfigs', {
       this.error = null;
 
       try {
-        const response = await axios.get(`${API_URL}/siteconfigs/${type}`);
+        const response = await axios.get(`siteconfigs/${type}`);
         this.configs[type] = {
           id: response.data.data.id,
           texts: response.data.data.texts,
@@ -75,16 +73,12 @@ export const useSiteConfigsStore = defineStore('siteConfigs', {
 
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.post(
-          `${API_URL}/siteconfigs`,
-          configData,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-          }
-        );
+        const response = await axios.post(`/siteconfigs`, configData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
 
         // Update local state
         const config = response.data.data;
@@ -119,16 +113,12 @@ export const useSiteConfigsStore = defineStore('siteConfigs', {
 
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.put(
-          `${API_URL}/siteconfigs/${type}`,
-          configData,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-          }
-        );
+        const response = await axios.put(`siteconfigs/${type}`, configData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
 
         // Update local state
         const config = response.data.data;

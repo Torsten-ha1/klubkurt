@@ -26,7 +26,7 @@ export const useAuthStore = defineStore('auth', {
             ? 'http://localhost:3001'
             : 'https://api.klub-kurt.com';
 
-        const response = await axios.post('/api/auth/login', credentials);
+        const response = await axios.post('/auth/login', credentials);
         const { token, user } = response.data;
 
         this.token = token;
@@ -56,7 +56,7 @@ export const useAuthStore = defineStore('auth', {
         // Set authorization header
         axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`;
 
-        const response = await axios.get('/api/auth/verify');
+        const response = await axios.get('/auth/verify');
         this.user = response.data.user;
         return true;
       } catch (error) {
@@ -70,7 +70,7 @@ export const useAuthStore = defineStore('auth', {
       try {
         // Call logout endpoint if authenticated
         if (this.token) {
-          await axios.post('/api/auth/logout');
+          await axios.post('/auth/logout');
         }
       } catch (error) {
         // Ignore logout errors
@@ -86,6 +86,9 @@ export const useAuthStore = defineStore('auth', {
 
         // Remove authorization header
         delete axios.defaults.headers.common['Authorization'];
+
+        // navigate to login page without reloading
+        window.location.href = '/login';
       }
     },
 
