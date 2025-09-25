@@ -3,17 +3,39 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>KURT Club — Techno in Bochum</title>
+    <meta name="author" content="Torsten Barthel" />
+    <meta
+      name="keywords"
+      content="KURT,KLUB,KURTKLUB,club,clubbing,Techno,Bochum,Nightclub,Tekno,House"
+    />
+    <meta name="theme-color" content="#000000" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <link rel="apple-touch-icon" href="assets/images/touch-icon.png" />
+    <link rel="icon" type="image/png" href="assets/images/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <title>KLUBKURT — Techno in Bochum</title>
     <meta
       name="description"
-      content="KURT Club is a techno club in Bochum. Line-ups, tickets, and vibes."
+      content="KLUB KURT is a techno club in Bochum. Line-ups, tickets, and vibes."
     />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body class="theme-acid">
     <header class="site-header" id="top">
-      <a href="#top" class="logo" aria-label="KURT Club home">KURT</a>
+      <a href="#top" class="logo" aria-label="KURT Club home">KLUBKURT</a>
       <nav class="nav">
+        <button
+          class="now-playing-btn"
+          type="button"
+          aria-label="Stop music"
+          title="Stop music"
+          hidden
+        >
+          ♪
+          <span class="sr-only">Stop music</span>
+        </button>
         <button
           class="nav-toggle"
           type="button"
@@ -29,24 +51,30 @@
           <a href="#about">About</a>
           <a href="#contact">Contact</a>
           <button
-            class="btn btn--ghost toggle-flash"
+            class="btn btn--ghost toggle-music"
             type="button"
             aria-pressed="false"
-            title="Toggle Flash Mode"
+            title="Play music"
           >
-            ⚡ Flash
+            ♪ Music
+            <span class="music-badge" aria-live="polite">Not playing</span>
           </button>
         </div>
       </nav>
     </header>
-    <div class="nav-overlay" aria-hidden="true" hidden></div>
 
     <main>
       <section class="hero" id="home" aria-label="Hero">
         <div class="hero__fx" aria-hidden="true"></div>
         <div class="hero__inner">
-          <h1 class="title">KURT KLUB</h1>
-          <p class="subtitle">House. Techno. Ruhrgebiet heart.</p>
+          <h1 class="title sr-only">KLUB KURT</h1>
+          <img
+            class="hero-logo"
+            src="assets/images/logo.jpg"
+            alt="KURT KLUB logo"
+            width="800"
+          />
+          <p class="subtitle">House. Techno. Ruhrgebiet Heart.</p>
           <div class="cta">
             <a class="btn btn--primary" href="#events">View Events</a>
             <a class="btn btn--ghost" href="#tickets">Get Tickets</a>
@@ -139,15 +167,30 @@
 
       <section class="about section" id="about" aria-labelledby="about-title">
         <h2 id="about-title">About KURT</h2>
+
+        <p>Our club feeling online too – listen in:</p>
+
+        <!-- SoundCloud Embed -->
+        <iframe
+          width="100%"
+          height="166"
+          scrolling="no"
+          frameborder="no"
+          allow="autoplay"
+          tabindex="-1"
+          src="https://w.soundcloud.com/player/?url=https://soundcloud.com/followlucre/plastic-magazine-mix?si=18b1469b3e9544c0a35f2552d201cc49&utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"
+        ></iframe>
+        <!-- /SoundCloud Embed -->
+
         <p>
           KURT is a raw, intimate techno basement in Bochum Mitte. No VIP. No
-          flash. Just a tuned system, dark corners, and a crowd that’s here to
+          flash. Just a tuned system, dark corners, and a crowd that's here to
           move.
         </p>
         <ul class="bullets">
-          <li>PK sound tuned for pressure—not volume.</li>
+          <li>Function One sound tuned for pressure - not volume.</li>
           <li>Lights minimal, strobes maximal.</li>
-          <li>Cashless bar · Cloakroom available.</li>
+          <li>Love for the underground.</li>
         </ul>
       </section>
 
@@ -170,66 +213,10 @@
     </main>
 
     <footer class="site-footer">
-      <p>© <span id="year"></span> KURT KLUB · Bochum</p>
+      <p>© <span id="year"></span> KLUB KURT · Bochum</p>
     </footer>
 
-    <script>
-      // Year
-      document.getElementById('year').textContent = new Date().getFullYear();
-
-      // Mobile nav refs
-      const navToggle = document.querySelector('.nav-toggle');
-      const navMenu = document.getElementById('nav-menu');
-
-      // Backdrop
-      const backdrop = document.querySelector('.nav-overlay');
-      const setMenuState = (open) => {
-        document.body.classList.toggle('nav-open', open);
-        if (navToggle) navToggle.setAttribute('aria-expanded', String(open));
-        if (backdrop) {
-          if (open) backdrop.removeAttribute('hidden');
-          else backdrop.setAttribute('hidden', '');
-        }
-      };
-      if (navToggle && navMenu) {
-        navToggle.addEventListener('click', () => {
-          const open = !document.body.classList.contains('nav-open');
-          setMenuState(open);
-        });
-        // Minimal: let anchors navigate; just close menu immediately
-        navMenu.addEventListener('click', (e) => {
-          const a = e.target.closest('a');
-          if (!a) return;
-          const href = a.getAttribute('href') || '';
-          if (href.startsWith('#')) {
-            // Do NOT preventDefault
-            if (document.body.classList.contains('nav-open'))
-              setMenuState(false);
-          }
-        });
-        if (backdrop)
-          backdrop.addEventListener('click', () => setMenuState(false));
-
-        window.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape') setMenuState(false);
-        });
-      }
-
-      // Flash toggle (respects reduced motion)
-      const prefersReduced = window.matchMedia(
-        '(prefers-reduced-motion: reduce)'
-      ).matches;
-      const btn = document.querySelector('.toggle-flash');
-      if (btn) {
-        btn.addEventListener('click', () => {
-          const active = document.body.classList.toggle('flash-mode');
-          btn.setAttribute('aria-pressed', String(active));
-        });
-        if (prefersReduced) {
-          btn.disabled = true;
-          btn.title = 'Animations limited due to reduced motion preference';
-        }
-      }
-    </script>
+    <script src="https://w.soundcloud.com/player/api.js"></script>
+    <script src="./scripts.js"></script>
   </body>
 </html>
