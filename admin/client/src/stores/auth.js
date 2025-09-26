@@ -22,9 +22,10 @@ export const useAuthStore = defineStore('auth', {
       try {
         // Set base URL for all axios requests
         axios.defaults.baseURL =
-          process.env.NODE_ENV === 'development'
-            ? 'http://localhost:3001'
-            : 'https://api.klub-kurt.com';
+          window.location.hostname === 'klub-kurt.com' ||
+          window.location.hostname === 'www.klub-kurt.com'
+            ? 'https://api.klub-kurt.com'
+            : 'http://localhost:3001';
 
         const response = await axios.post('/auth/login', credentials);
         const { token, user } = response.data;

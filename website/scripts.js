@@ -221,9 +221,10 @@ if (nowPlayingBtn) {
 class SiteConfigManager {
   constructor() {
     this.apiBaseUrl =
-      process.env.NODE_ENV === 'production'
-        ? 'https://api.klub-kurt.com/'
-        : 'http://localhost:3001/';
+      window.location.hostname === 'klub-kurt.com' ||
+      window.location.hostname === 'www.klub-kurt.com'
+        ? 'https://api.klub-kurt.com'
+        : 'http://localhost:3001';
     this.marqueeElement = document.querySelector('.marquee__track');
     this.soundcloudIframe = document.querySelector(
       'iframe[src*="soundcloud.com/player"]'
@@ -412,9 +413,10 @@ class EventsManager {
   constructor() {
     this.eventsContainer = document.querySelector('.event-list');
     this.apiBaseUrl =
-      process.env.NODE_ENV === 'production'
-        ? 'https://api.klub-kurt.com/'
-        : 'http://localhost:3001/';
+      window.location.hostname === 'klub-kurt.com' ||
+      window.location.hostname === 'www.klub-kurt.com'
+        ? 'https://api.klub-kurt.com'
+        : 'http://localhost:3001';
     this.isLoading = false;
 
     // Initialize events loading
