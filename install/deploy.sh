@@ -12,7 +12,7 @@ cd /opt/klubkurt/
 git pull 
 
 cd admin/client
-npm install
+npm i --production=false --legacy-peer-deps
 npm run build
 
 # copy built vue.js app to apache webroot
