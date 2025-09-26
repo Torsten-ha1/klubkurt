@@ -68,9 +68,9 @@ mongoose
   });
 
 // Enable CORS for all routes
-app.use('/auth', cors());
-app.use('/events', cors());
-app.use('/siteconfigs', cors());
+// app.use('/auth', cors());
+// app.use('/events', cors());
+// app.use('/siteconfigs', cors());
 
 // Routes
 app.use('/auth', authRoutes);
