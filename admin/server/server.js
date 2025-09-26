@@ -67,15 +67,15 @@ mongoose
     process.exit(1);
   });
 
+// Enable CORS for all routes
+app.use('/auth', cors());
+app.use('/events', cors());
+app.use('/siteconfigs', cors());
+
 // Routes
 app.use('/auth', authRoutes);
 app.use('/events', eventsRoutes);
 app.use('/siteconfigs', siteConfigsRoutes);
-
-// Enable CORS for all routes
-app.use('/api/auth', cors());
-app.use('/api/events', cors());
-app.use('/api/siteconfigs', cors());
 
 // Health check endpoint
 app.get('/health', (req, res) => {
